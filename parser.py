@@ -38,6 +38,7 @@ def get_proxy(proxies):
     proxy = proxies[random_proxy]
     return proxy
 
+
 # AVITO part
 
 def get_fridge_data(avito_response, fridge_base):
@@ -73,7 +74,7 @@ def get_phone_number(link):
     return phone
 
 
-# telegram part
+# Telegram part
 
 def get_updates_json(request):
     response = requests.get(request + 'getUpdates')
@@ -100,7 +101,6 @@ def send_message(chat, fridge_base):
                                        item['price']
                                        )
             params = {'chat_id': chat, 'text': text}
-            print (bot_url, params)
             requests.post(bot_url + 'sendMessage', data=params)
     return None
 
@@ -119,7 +119,6 @@ if __name__ == '__main__':
                 checker = False
             except:
                 print('bad proxy')
-        #chat_id = get_chat_id(last_update(get_updates_json(bot_url)))
         send_message(CHAT_ID, fridge_base)
         print('пауза 5 минут')
         time.sleep(5*60)

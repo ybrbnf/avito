@@ -10,6 +10,7 @@ AVITO_URL = 'https://www.avito.ru/saratov/bytovaya_tehnika/dlya_kuhni/holodilnik
 BASE_BOT_URL = 'https://api.telegram.org/bot'
 TOKEN = ''
 PROXIES_URL = 'https://www.sslproxies.org/'
+CHAT_ID = ''
 
 
 def get_html(url, proxy):
@@ -20,7 +21,6 @@ def get_html(url, proxy):
 
 
 # Proxy part
-
 
 def get_proxies(proxies_resp):
     proxies = []
@@ -38,8 +38,8 @@ def get_proxy(proxies):
     proxy = proxies[random_proxy]
     return proxy
 
-
 # AVITO part
+
 def get_fridge_data(avito_response, fridge_base):
     ids = [item['id'] for item in fridge_base]
     soup = BeautifulSoup(avito_response.text, 'lxml')
@@ -100,6 +100,7 @@ def send_message(chat, fridge_base):
                                        item['price']
                                        )
             params = {'chat_id': chat, 'text': text}
+            print (bot_url, params)
             requests.post(bot_url + 'sendMessage', data=params)
     return None
 
@@ -118,7 +119,7 @@ if __name__ == '__main__':
                 checker = False
             except:
                 print('bad proxy')
-        chat_id = get_chat_id(last_update(get_updates_json(bot_url)))
-        send_message(chat_id, fridge_base)
+        #chat_id = get_chat_id(last_update(get_updates_json(bot_url)))
+        send_message(CHAT_ID, fridge_base)
         print('пауза 5 минут')
         time.sleep(5*60)

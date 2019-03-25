@@ -109,8 +109,14 @@ if __name__ == '__main__':
 
     fridge_base = [{'id': 0, 'label': 1}]
     bot_url = BASE_BOT_URL + TOKEN
+    midnight = datetime.time(11)
+    morning = datetime.time(11,30)
+    proxies = get_proxies(get_html(PROXIES_URL, proxy=None))
     while True:
-        proxies = get_proxies(get_html(PROXIES_URL, proxy=None))
+        now = datetime.datetime.now().time()
+        if midnight < now < morning:
+            proxies = get_proxies(get_html(PROXIES_URL, proxy=None))
+            print('new proxies')
         checker = True
         while checker:
             try:

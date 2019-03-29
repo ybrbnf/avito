@@ -54,9 +54,8 @@ def get_fridge_data(avito_response, fridge_base):
         if 'холодильник' in title and publication_date == 'Сегодня' and id_num not in ids:
             fridge_base.append({
                 'id': id_num,
-                'phone': get_phone_number(link),
                 'title': title,
-                'link': link,
+                'link': 'https://avito.ru' + link,
                 'price': price,
                 'publication_date': publication_date,
                 'label': '0'
@@ -64,40 +63,14 @@ def get_fridge_data(avito_response, fridge_base):
     return fridge_base
 
 
-def get_phone_number(link):
-    fridge_response = get_html('https://m.avito.ru' + link, proxy)
-    soup = BeautifulSoup(fridge_response.text, 'lxml')
-    try:
-        phone = soup.find('a', {'class': '_2MOUQ'})['href'][4:]
-    except TypeError:
-        phone = 'None'
-    return phone
-
-
 # Telegram part
-
-def get_updates_json(request):
-    response = requests.get(request + 'getUpdates')
-    return response.json()
-
-
-def last_update(data):
-    results = data['result']
-    total_updates = len(results) - 1
-    return results[total_updates]
-
-
-def get_chat_id(update):
-    chat_id = update['message']['chat']['id']
-    return chat_id
-
 
 def send_message(chat, fridge_base):
     for item in fridge_base:
         if item['label'] == '0':
             item['label'] = '1'
             text = '{}, {}, {}'.format(item['title'],
-                                       item['phone'],
+                                       item['link'],
                                        item['price']
                                        )
             params = {'chat_id': chat, 'text': text}

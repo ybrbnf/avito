@@ -53,14 +53,21 @@ def get_fridge_data(avito_response, fridge_base):
         id_num = link[-10:]
         if 'холодильник' in title and publication_date == 'Сегодня' and id_num not in ids:
             fridge_base.append({
-                'id': id_num,
-                'title': title,
                 'link': 'https://avito.ru' + link,
                 'price': price,
-                'publication_date': publication_date,
                 'label': '0'
                 })
     return fridge_base
+
+
+def get_phone_number(link):
+    fridge_response = get_html('https://m.avito.ru' + link, proxy)
+    soup = BeautifulSoup(fridge_response.text, 'lxml')
+    try:
+        phone = soup.find('a', {'class': '_2MOUQ'})['href'][4:]
+    except TypeError:
+        phone = 'None'
+    return phone
 
 
 # Telegram part
@@ -69,8 +76,7 @@ def send_message(chat, fridge_base):
     for item in fridge_base:
         if item['label'] == '0':
             item['label'] = '1'
-            text = '{}, {}, {}'.format(item['title'],
-                                       item['link'],
+            text = '{}, {}, {}'.format(item['link'],
                                        item['price']
                                        )
             params = {'chat_id': chat, 'text': text}
@@ -82,12 +88,12 @@ if __name__ == '__main__':
 
     fridge_base = [{'id': 0, 'label': 1}]
     bot_url = BASE_BOT_URL + TOKEN
-    midnight = datetime.time(11)
-    morning = datetime.time(11,30)
+    start_upd_proxy = datetime.time(11)
+    stop_upd_proxy = datetime.time(11,30)
     proxies = get_proxies(get_html(PROXIES_URL, proxy=None))
     while True:
         now = datetime.datetime.now().time()
-        if midnight < now < morning:
+        if start_upd_proxy < now < stop_upd_proxy:
             proxies = get_proxies(get_html(PROXIES_URL, proxy=None))
             print('new proxies')
         checker = True
